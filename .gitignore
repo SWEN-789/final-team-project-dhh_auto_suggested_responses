@@ -4,3 +4,5 @@
 # Log file
 *.log
 
+# Maven target directory
+target
