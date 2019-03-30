@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>edu.rit.se.a11y.autoresponses</groupId>
-    <artifactId>AutoSuggestedResponses</artifactId>
+    <artifactId>AutoSuggestedResponsesService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <parent>
@@ -16,6 +16,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
 
