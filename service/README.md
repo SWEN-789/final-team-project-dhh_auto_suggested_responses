@@ -9,8 +9,8 @@ Request body required; should be in the format like the following example:
 
 ```json
 {
-	"context": "food service",
-	"message": "what would you like to order"
+    "context": "food service",
+    "message": "what would you like to order"
 }
 ```
 
@@ -33,8 +33,8 @@ Request body required; should be in the format like the following example:
 
 ```json
 {
-	"context": "food service",
-	"suggestedResponse": "Could I please get a salad?"
+    "context": "food service",
+    "suggestedResponse": "Could I please get a salad?"
 }
 ```
 
@@ -48,6 +48,11 @@ To boot the service, run one of the following commands based on the respective o
 - `mvnw spring-boot:run` (Windows)
 - `./mvnw spring-boot:run` (Linux, Unix, Macintosh)
 
+NOTE: These commands run the service on the port 8080 as the default. If you need or would like to run the service on a different port, run one of the following commands based on the operating system:
+
+- `mvnw spring-boot:run -Dserver.port=<portNumber>` (Windows)
+- `./mvnw spring-boot:run -Dserver.port=<portNumber>` (Linux, Unix, Macintosh)
+
 NOTE: these commands require the environment variable `JAVA_HOME` to be set up on your machine
 
 If successful, some of the output of these commands should look like:
@@ -56,3 +61,12 @@ If successful, some of the output of these commands should look like:
 
 > 2019-04-01 20:40:26.850  INFO 14636 --- [           main] e.rit.se.a11y.autoresponses.Application  : Started Application in 4.043 seconds (JVM running for 12.061)
 
+There is also an endpoint that provides the health of the service after running, which is a GET resource at the following URL (when running locally on the default port 8080):
+
+[http://localhost:8080/actuator/health](http://localhost:8080/actuator/health "Actuator Health")
+
+This endpoint will return the following response if the service is up and running successfully:
+
+```json
+{ status: 'UP' }
+```
