@@ -97,7 +97,7 @@ switch (ENVIRONMENT)
  * This variable must contain the name of your "system" directory.
  * Set the path if it is not in the same directory as this file.
  */
-	$system_path = 'c:/users/mfabbu/phpstormprojects/dhh_chat/system';
+	$system_path = 'C:\Users\mfabbu\PhpstormProjects\final-team-project-dhh_auto_suggested_responses\web_app\system';
 
 /*
  *---------------------------------------------------------------
@@ -114,7 +114,7 @@ switch (ENVIRONMENT)
  *
  * NO TRAILING SLASH!
  */
-	$application_folder = 'c:/users/mfabbu/phpstormprojects/dhh_chat/application';
+	$application_folder = 'C:\Users\mfabbu\PhpstormProjects\final-team-project-dhh_auto_suggested_responses\web_app\application';
 
 /*
  *---------------------------------------------------------------

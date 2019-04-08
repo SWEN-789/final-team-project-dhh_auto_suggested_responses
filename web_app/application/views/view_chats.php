@@ -82,7 +82,7 @@ print_r($_SESSION);
 
     function send_message() {
         $.ajax({
-            url: "<?php echo site_url('Chat/ajax_add_chat_message');?>",
+            url: "<?php echo site_url('index.php/Chat/ajax_add_chat_message');?>",
             type: "POST",
             data: $('#form_chat').serialize(),
             dataType: "JSON",
@@ -100,7 +100,7 @@ print_r($_SESSION);
 
     function get_chat_messages() {
         $.ajax({
-            url: "<?php echo site_url('Chat/ajax_get_chat_messages');?>",
+            url: "<?php echo site_url('index.php/Chat/ajax_get_chat_messages');?>",
             type: "POST",
             dataType: "JSON",
             success: function(data) {
@@ -124,7 +124,7 @@ print_r($_SESSION);
         var content = 'what would you like to order';
 
         $.ajax({
-            url: "<?php echo site_url('Chat/ajax_get_api_results');?>",
+            url: "<?php echo site_url('index.php/Chat/ajax_get_api_results');?>",
             type: "POST",
             data: content,
             dataType: "JSON",

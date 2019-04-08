@@ -41,14 +41,14 @@
     function chatLogin() {
         //alert('logging in...');
         $.ajax({
-            url: "<?php echo site_url('Chat/ajax_check_login'); ?>",
+            url: "<?php echo site_url('index.php/Chat/ajax_check_login'); ?>",
             type: "POST",
             data: $('#form_login').serialize(),
             dataType: "JSON",
             success: function(data) {
                 if (data.authenticated) {
                     //alert('Logged in.');
-                    window.location = "<?php echo site_url('Chat/view_chats'); ?>";
+                    window.location = "<?php echo site_url('index.php/Chat/view_chats'); ?>";
                 } else {
                     alert('You are not authorized.');
                 }
