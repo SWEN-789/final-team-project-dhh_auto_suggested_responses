@@ -4,3 +4,5 @@ A repository containing an API service and a demo chat application to provide au
 
 See [the service README](service/README.md) for details about and running the service that retrieves and adds suggested response messages.
 
+See the web-app README for details on installing the Codeigniter framework, creating the database, and launching the web-app.
+
