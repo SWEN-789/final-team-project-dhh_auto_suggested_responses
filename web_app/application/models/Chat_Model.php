@@ -94,6 +94,19 @@ class Chat_Model extends MY_Model {
 		return $query->result();
 	}
 
+	public function set_last_chat_message($message_id) {
+		$this->db->set('last_chat_message', $message_id, FALSE);
+		$this->db->update('sys_variables');
+		return true;
+	}
+
+	public function get_last_chat_message() {
+		$this->db->select('last_chat_message', FALSE);
+		$this->db->from('sys_variables');
+		$query = $this->db->get();
+		return $query->row();
+	}
+
 	public function callAPI($method, $url, $data) {
 		$curl = curl_init();
 

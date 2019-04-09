@@ -1,5 +1,5 @@
 <?php
-print_r($_SESSION);
+//print_r($_SESSION);
 ?>
 <div class="container">
 	<div class="row">
@@ -22,11 +22,11 @@ print_r($_SESSION);
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" id="message_content" list="suggestions" name="message_content"/>
                                 <datalist id="suggestions">
-                                    <option value="Suggested Response #1">
-                                    <option value="Suggested Response #2">
-                                    <option value="Suggested Response #3">
-                                    <option value="Suggested Response #4">
-                                    <option value="Suggested Response #5">
+<!--                                    <option value="Suggested Response #1">-->
+<!--                                    <option value="Suggested Response #2">-->
+<!--                                    <option value="Suggested Response #3">-->
+<!--                                    <option value="Suggested Response #4">-->
+<!--                                    <option value="Suggested Response #5">-->
                                 </datalist>
                                 <div class="input-group-append">
                                     <button class="btn btn-success" id="btn_send_message" type="button" onclick="send_message()">Send</button>
@@ -59,6 +59,8 @@ print_r($_SESSION);
 
         setInterval(function() {
             get_chat_messages();
+            //get_auto_responses('what would you like to order');
+            //get_auto_responses();
             //scroll_down();
         }, 1000);
 
@@ -81,6 +83,7 @@ print_r($_SESSION);
     };
 
     function send_message() {
+
         $.ajax({
             url: "<?php echo site_url('index.php/Chat/ajax_add_chat_message');?>",
             type: "POST",
@@ -89,8 +92,15 @@ print_r($_SESSION);
             success: function(data) {
                if (data.status) {
                    $('#chat_viewport').html(data.content);
+                   var message_content_pre = $('#message_content').val();
                    $('#message_content').val('');
+                   //var content = 'what would you like to order';
+                   //get_auto_responses();
+                   get_auto_responses(message_content_pre);
+
+
                }
+
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Add New Chat Message Error adding / update data: ' + errorThrown);
@@ -108,7 +118,7 @@ print_r($_SESSION);
                     //var current_content = $("#chat_viewport").html();
                     //$("#chat_viewport").html(current_content + data.content);
                     $("#chat_viewport").html(data.content);
-                    get_auto_responses();
+
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -117,19 +127,51 @@ print_r($_SESSION);
         });
     }
 
-    function get_auto_responses() {
-
-        //$('#message_content').val('');
-
-        var content = 'what would you like to order';
-
+    function get_last_message_id() {
         $.ajax({
-            url: "<?php echo site_url('index.php/Chat/ajax_get_api_results');?>",
+            url: "<?php echo site_url('index.php/Chat/ajax_get_last_chat_message_id');?>",
             type: "POST",
-            data: content,
             dataType: "JSON",
             success: function(data) {
-                alert('bingo!');
+
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Get last Chat Messages Error adding / update data: ' + errorThrown);
+            }
+        });
+    }
+
+
+    function get_auto_responses(content) {
+
+        //$('#suggestions').html('');
+        document.getElementById('suggestions').innerHTML = '';
+
+        var str = content;
+        str = str.replace(/\s+/g, '-').toLowerCase();
+
+        //alert("'"+content+"'");
+        console.log(content);
+        console.log(str);
+
+
+        //var content = 'what would you like to order';
+        //content = "'" + content + "'";
+
+        $.ajax({
+            url: "<?php echo site_url('index.php/Chat/ajax_get_api_results');?>/" + str,
+            type: "POST",
+            //data: str,
+            dataType: "JSON",
+            success: function(data) {
+                //alert(JSON.stringify(data));
+                var responses = data.suggestedResponses;
+
+                $.each(responses, function(i, item) {
+                   $("#suggestions").append("<option value='" + responses[i] + "'>");
+                });
+
+                //alert(responses);
                 // if (data.status) {
                 //     $('#message_content').val(data.suggestedResponses);
                 //     //$('#message_content').val('');

@@ -70,6 +70,7 @@ class Chat extends MY_Controller {
 
 		$result = $this->Chat_Model->add_chat_message($chat_id, $user_id, $message_content);
 		$this->session->set_userdata('last_chat_message_id_'.$chat_id, $result);
+		$this->Chat_Model->set_last_chat_message($result);
 		//echo json_encode(array('status' => $result));
 		// grab and return messages
 		echo $this->_get_chat_messages($chat_id);
@@ -117,8 +118,10 @@ class Chat extends MY_Controller {
 		}
 	}
 
-	public function ajax_get_api_results() { //$message) { //($method, $url, $data) {
-		$message = 'what would you like to order';
+	public function ajax_get_api_results($message) { //($method, $url, $data) {
+		//$message = 'what would you like to order';
+		//log_message('debug', 'message: '.$message);
+		$message = str_replace('-',' ', $message);
 		$method = "POST";
 		$url = "http://localhost:8080/get-suggested-responses";
 		$data = json_encode( array(
