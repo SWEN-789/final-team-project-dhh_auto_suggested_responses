@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,7 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
 
         if (Strings.isNotBlank(context) && Strings.isNotBlank(phrase)) {
             List<String> phrasesForContext = contextPhrasesMap.get(context);
-            if (phrasesForContext != null && phrasesForContext.stream().anyMatch(s -> phrase.contains(s))) {
+            if (phrasesForContext != null && phrasesForContext.stream().anyMatch(s -> StringUtils.containsIgnoreCase(phrase, s))) {
                 suggestedResponses = contextSuggestedResponsesMap.get(context);
             }
         }
