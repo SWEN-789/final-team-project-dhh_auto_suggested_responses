@@ -1,12 +1,26 @@
 package edu.rit.se.a11y.autoresponses.service.impl;
 
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Properties;
+
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
+
+
+
 import org.apache.logging.log4j.util.Strings;
+import org.ejml.simple.SimpleMatrix;
 import org.springframework.stereotype.Service;
 
 import edu.rit.se.a11y.autoresponses.api.AddSuggestedResponseRequest;
@@ -35,6 +49,36 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
         // Set up a default, empty response object in case there is an issue with the request body
         GetSuggestedResponsesResponse suggestedResponse = new GetSuggestedResponsesResponse(new ArrayList<>());
 
+        Properties pipelineProps = new Properties();
+        Properties tokenizerProps = new Properties();
+        pipelineProps.setProperty("annotators", "parse, sentiment");
+        pipelineProps.setProperty("parse.binaryTrees", "true");
+        pipelineProps.setProperty("enforceRequirements", "false");
+        tokenizerProps.setProperty("annotators", "tokenize, ssplit, pos, lemma, ");
+        StanfordCoreNLP tokenizer = new StanfordCoreNLP(tokenizerProps);
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(pipelineProps);
+        String line = suggestedRequest.getMessage();
+        System.out.println(tokenizer);
+        Annotation annotation = tokenizer.process(line);
+        System.out.println(annotation);
+        pipeline.annotate(annotation);
+        // normal output
+        for(CoreMap sentence: annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
+
+            System.out.println(sentence);
+
+            Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
+
+            System.out.println(tree);
+
+            SimpleMatrix simpleMatrix = RNNCoreAnnotations.getPredictions(tree);
+
+            System.out.println(simpleMatrix);
+            System.out.println(sentence);
+        }
+
+
+            System.out.println( "End of Processing" );
         if (suggestedRequest != null) {
             String context = suggestedRequest.getContext();
             String message = suggestedRequest.getMessage();
