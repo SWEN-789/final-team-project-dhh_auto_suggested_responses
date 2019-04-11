@@ -1,6 +1,5 @@
 package edu.rit.se.a11y.autoresponses.service.impl;
 
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.ejml.simple.SimpleMatrix;
 import org.springframework.stereotype.Service;
@@ -94,7 +94,7 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
 
         if (Strings.isNotBlank(context) && Strings.isNotBlank(phrase)) {
             List<String> phrasesForContext = contextPhrasesMap.get(context);
-            if (phrasesForContext != null && phrasesForContext.stream().anyMatch(s -> phrase.contains(s))) {
+            if (phrasesForContext != null && phrasesForContext.stream().anyMatch(s -> StringUtils.containsIgnoreCase(phrase, s))) {
                 suggestedResponses = contextSuggestedResponsesMap.get(context);
             }
         }
