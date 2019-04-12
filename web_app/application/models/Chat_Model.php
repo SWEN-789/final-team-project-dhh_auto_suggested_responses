@@ -13,60 +13,9 @@ class Chat_Model extends MY_Model {
 		$this->load->database();
 	}
 
-	public function check_login($data) {
-		//log_message('debug', print_r($data, true));
-		$this->db->db_select('dhh_chat');
-		$this->db->select('*', FALSE);
-		$this->db->from('users');
-		$this->db->where($data);
-		$this->db->limit(1);
-		$query = $this->db->get();
-		if ($query->num_rows() == 0) {
-			$result = array('authenticated' => false);
-		} else {
-			while ($row = $query->unbuffered_row()) {
-				$result = array(
-					'user_id' => $row->id,
-					'user_username' => $row->username,
-					'user_fullname' => $row->name,
-					'user_admin' => $row->admin,
-					'user_authenticated' => true
-				);
-				//log_message('debug', print_r($result, true));
-			}
-		}
-		return $result;
-	}
 
-	public function set_online($user) {
-		// if already online, update last_activity, else insert new record
-		$this->db->select("*", FALSE);
-		$this->db->from('users_online');
-		$this->db->where('user_id', $user);
-		$query = $this->db->get();
-		$result = $query->row();
-		if ($result) {
-			log_message('debug', 'already logged in.');
-		} else {
-			$this->db->insert('users_online', array('user_id' => $user));
-		}
-		return true;
-	}
 
-	public function get_users_online() {
-		$this->db->select('users_online.user_id AS user_id', FALSE);
-		$this->db->select('users.username AS user_username', FALSE);
-		$this->db->select('users.name AS user_fullname', FALSE);
-		$this->db->from('users_online');
-		$this->db->join('users', 'users_online.user_id = users.id');
-		$query = $this->db->get();
-		return $query->result();
-	}
 
-	public function remove_user_online($user) {
-		$this->db->delete('user_online', array('user_id' => $user));
-		return true;
-	}
 
 	public function add_chat_message($chat_id, $user_id, $message_content) {
 		$data = array(
@@ -94,15 +43,34 @@ class Chat_Model extends MY_Model {
 		return $query->result();
 	}
 
-	public function set_last_chat_message($message_id) {
+	public function set_last_chat_message($message_id,$user_admin) {
 		$this->db->set('last_chat_message', $message_id, FALSE);
+		$this->db->set('last_sender', $user_admin, FALSE);
 		$this->db->update('sys_variables');
-		return true;
+		return $this->db->affected_rows();
 	}
 
 	public function get_last_chat_message() {
 		$this->db->select('last_chat_message', FALSE);
 		$this->db->from('sys_variables');
+		$query = $this->db->get();
+		return $query->row();
+	}
+
+	public function get_last_sender() {
+		$this->db->select('last_sender', FALSE);
+		$this->db->from('sys_variables');
+		$query = $this->db->get();
+		return $query->row();
+		//$row = $query->row();
+		//if ($row->last_sender) return 1;
+		//else return 0;
+	}
+
+	public function get_last_message() {
+		$this->db->select('messages.message_content as message', FALSE);
+		$this->db->from('messages');
+		$this->db->join('sys_variables', 'messages.id = sys_variables.last_chat_message');
 		$query = $this->db->get();
 		return $query->row();
 	}

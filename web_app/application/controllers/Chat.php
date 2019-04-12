@@ -48,17 +48,21 @@ class Chat extends MY_Controller {
 			$this->session->set_userdata('user_session', $auth);
 		}
 		$result = array(
+			'admin' => $_SESSION['user_session']['user_admin'],
 			'authenticated' => $auth
 		);
 		echo json_encode($result);
 	}
 
 	public function ajax_logout() {
-
+		$this->Chat_Model->set_offline($_SESSION['user_session']['user_id']);
+		unset($_SESSION['user_session']);
+		echo json_encode(array('logout' => true));
 	}
 
 	public function view_chats() {
-		$data['users_online'] = $this->Chat_Model->get_users_online();
+		$data['chat_id'] = $_SESSION['user_session']['user_id'];
+		//$data['users_online'] = $this->Chat_Model->get_users_online();
 		$this->template->load('view_chats', $data);
 	}
 
@@ -66,19 +70,36 @@ class Chat extends MY_Controller {
 
 		$chat_id = $this->input->post('chat_id');
 		$user_id = $this->input->post('user_id');
+		$user_admin = $this->input->post('user_admin');
 		$message_content = $this->security->xss_clean($this->input->post('message_content'));
 
 		$result = $this->Chat_Model->add_chat_message($chat_id, $user_id, $message_content);
+		log_message('debug','last message inserted: ' . $result);
 		$this->session->set_userdata('last_chat_message_id_'.$chat_id, $result);
-		$this->Chat_Model->set_last_chat_message($result);
+
+		$result2 = $this->Chat_Model->set_last_chat_message($result, $user_admin);
 		//echo json_encode(array('status' => $result));
 		// grab and return messages
 		echo $this->_get_chat_messages($chat_id);
 	}
 
 	public function ajax_get_chat_messages() {
-		$chat_id = 1;
-		echo $this->_get_chat_messages($chat_id);
+		//$chat_id = $_SESSION['user_session']['user_id'];
+		echo $this->_get_chat_messages($_SESSION['chat_id']);
+	}
+
+	public function ajax_get_last_sender() {
+		$last_sender = $this->Chat_Model->get_last_sender();
+		//echo json_encode(array("last_sender" => $last_sender));
+		$result = array(
+			'last_sender' => $last_sender
+		);
+		echo json_encode($result);
+	}
+
+	public function ajax_get_last_message() {
+		$last_message = $this->Chat_Model->get_last_message();
+		echo json_encode(array("message" => $last_message));
 	}
 
 	function _get_chat_messages($chat_id) {
@@ -124,6 +145,7 @@ class Chat extends MY_Controller {
 		$message = str_replace('-',' ', $message);
 		$method = "POST";
 		$url = "http://localhost:8080/get-suggested-responses";
+		//$url = "https://dhh-service.heroku.com/get-suggested-responses";
 		$data = json_encode( array(
 			'context' => 'food service',
 			'message' => $message
