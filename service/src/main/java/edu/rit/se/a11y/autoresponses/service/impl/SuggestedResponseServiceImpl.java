@@ -30,8 +30,8 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
         foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("what would you like to order", Arrays.asList("Could I please get a cheeseburger?", "Could I please get a chicken finger sandwich?"));
         foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("what would you like on that", Arrays.asList("Cheese and honey mustard, please.", "Nothing."));
         foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("anything to drink", Arrays.asList("Just water, please."));
-        foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("here's your receipt", Arrays.asList("Thank you!"));
-        foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("your order should be ready", Arrays.asList("Thank you!"));
+        foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("here's your receipt", Arrays.asList("Thank you."));
+        foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("your order should be ready", Arrays.asList("Thank you."));
         contextMessageResponseModelList.add(foodServiceContextMessageResponseModelObject);
 
         ContextMessageResponseModel movieServiceContextMessageResponseModelObject = new ContextMessageResponseModel();
@@ -39,8 +39,8 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
         movieServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("what movie would you like to see", Arrays.asList("I would like to see"));
         movieServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("how many tickets", Arrays.asList("1 adult ticket and 1 child ticket."));
         movieServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("any snacks or drinks", Arrays.asList("Could I please get a chocolate bar?", "Could I please get a small popcorn?", "No thanks."));
-        movieServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("here are your tickets", Arrays.asList("Thanks!", "Thank you!"));
-        movieServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("have a good evening", Arrays.asList("Thanks, you too!"));
+        movieServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("here are your tickets", Arrays.asList("Thanks.", "Thank you."));
+        movieServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("have a good evening", Arrays.asList("Thanks, you too."));
         contextMessageResponseModelList.add(movieServiceContextMessageResponseModelObject);
     }
 
