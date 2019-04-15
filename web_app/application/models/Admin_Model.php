@@ -13,4 +13,14 @@ class Admin_Model extends MY_Model {
 		$this->load->database();
 	}
 
+	public function get_users_online() {
+		$this->db->select('users_online.user_id AS user_id', FALSE);
+		$this->db->select('users.username AS user_username', FALSE);
+		$this->db->select('users.name AS user_fullname', FALSE);
+		$this->db->from('users_online');
+		$this->db->join('users', 'users_online.user_id = users.id');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
 }

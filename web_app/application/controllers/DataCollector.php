@@ -32,11 +32,14 @@ class DataCollector extends MY_Controller {
 	}
 
 	public function ajax_write_data() {
+
+		log_message('debug', 'AJAX_WRITE_DATA CALLED');
+
 		$user = $this->input->post('user');
 		$data = $this->input->post('data');
 
 		$result = $this->DataCollector_Model->write_to_file($user, $data);
-		echo json_encode(array('status' => true));
+		echo json_encode(array('status' => $result));
 	}
 
 }

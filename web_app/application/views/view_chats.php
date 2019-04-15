@@ -1,7 +1,15 @@
-
+<?php
+if ($_SESSION['mode'] == 1) $asterisk = '*';
+else $asterisk = '';
+?>
+<div class="container">
+    <nav class="navbar navbar-dark bg-dark">
+        <span class="navbar-brand mb-0 h1"><?php echo ucfirst($_SESSION['context']); ?> Service Chat<?php echo $asterisk; ?></span>
+    </nav>
+</div>
 <div class="container">
 	<div class="row">
-		<div class="col">Logged in: <?php echo $_SESSION['user_session']['user_fullname'];?> (Chat #<?php echo $chat_id; ?>)</div>
+		<div class="col">Logged in: <?php echo $_SESSION['user_session']['user_fullname'];?> (Chat #<?php echo $_SESSION['chat_id']; ?>)</div>
         <div class="col" style="text-align: right"><button type="button" id="btnLogOut" onclick="chat_logout()" class="btn btn-primary btn-sm">Log Out</button></div>
 	</div>
     <div class="row">
@@ -13,6 +21,8 @@
             <div id="chat_input">
                 <form action="#" id="form_chat" name="form_chat">
                     <input type="hidden" value="<?php echo $_SESSION['chat_id']; ?>" name="chat_id" id="chat_id" />
+                    <input type="hidden" value="<?php echo $_SESSION['context']; ?>" name="context" id="context" />
+                    <input type="hidden" value="<?php echo $_SESSION['mode']; ?>" name="mode" id="mode" />
                     <input type="hidden" value="<?php echo $_SESSION['user_session']['user_id']; ?>" name="user_id" id="user_id" />
                     <input type="hidden" value="<?php echo $_SESSION['user_session']['user_admin']; ?>" name="user_admin" id="user_admin" />
                     <div class="row">
@@ -24,10 +34,17 @@
                                 <input type="text" class="form-control" id="message_content" name="message_content"/>
                                 <?php
                                 } else {
-                                ?>
-                                    <input type="text" class="form-control" id="message_content" list="suggestions" name="message_content" autocomplete="off"/>
-                                    <datalist id="suggestions"></datalist>
-	                                <?php
+                                    if ($_SESSION['mode'] == 1) {
+	                                    ?>
+                                        <input type="text" class="form-control" id="message_content" list="suggestions"
+                                               name="message_content" autocomplete="off"/>
+                                        <datalist id="suggestions"></datalist>
+	                                    <?php
+                                    } else {
+	                                    ?>
+                                        <input type="text" class="form-control" id="message_content" name="message_content" autocomplete="off"/>
+	                                    <?php
+                                    }
                                 }
                                 ?>
 
@@ -53,7 +70,7 @@
         </div>
     </div>
 	<?php
-	print_r($_SESSION);
+	//print_r($_SESSION);
 	?>
 </div>
 
@@ -61,8 +78,13 @@
 
 <script type="text/javascript">
 
-    var last_sender;
-    var last_message = '';
+    //var last_sender = 0;
+    //var last_message = '';
+   // var last_message_id;
+    var sr_flag = false;
+    //var chat_context = <?php //echo $_SESSION['context'] ?>//;
+    //var chat_mode = <?php //echo $_SESSION['mode'] ?>//;
+
     var user_role = <?php echo $_SESSION['user_session']['user_admin']; ?>;
     console.log('user_role: ' + user_role);
 
@@ -72,16 +94,17 @@
 
         $( "#message_content" ).on( "keyup", function( event ) {
 
+            console.log('KEY UP');
             //$( "#log" ).html( event.type + ": " +  event.which );
 
             if (event.keyCode == 13) {
                 output = output + '[ENTER]';
-                console.log(output);
+                console.log('type: ' + output);
                 write_data(output);
                 //$('#whichkey').val('');
             } else if (event.which == 8) {
                 output = output + '[BACKSPACE]';
-                console.log(output);
+                console.log('type: ' + output);
                 write_data(output);
 
                 // } else if (event.which == 32) {
@@ -96,8 +119,8 @@
         });
 
         function write_data(textData) {
-            userName = <?php echo $_SESSION['user_session']['user_id']; ?>;
-
+            userName = '<?php echo $_SESSION['user_session']['user_username']; ?>';
+            console.log('userName: ' + userName);
             $.ajax({
                 url: "<?php echo site_url('index.php/DataCollector/ajax_write_data');?>",
                 type: "POST",
@@ -119,6 +142,42 @@
         //scroll_down();
 
         setInterval(function() {
+
+            console.log('sr_flag: ' + sr_flag);
+
+            get_chat_messages();
+            get_last_sender();
+            get_last_message();
+
+
+            if (last_sender == 1) {
+                console.log('last_sender 1');
+                if (!sr_flag) {
+                    //get_last_message();
+                    console.log('last_message: ' + last_message);
+                    if (last_message) {
+                        get_auto_responses(last_message);
+                        sr_flag = true;
+                    } else {
+                        sr_flag = false;
+                    }
+
+                }
+            } else if (last_sender == 0) {
+                console.log('last_sender 0');
+                sr_flag = false;
+                if (user_role == 0) {
+                    //$('#message_content').val('');
+                    removeOptions(document.getElementById("suggestions"));
+                } else {
+                    removeOptions(document.getElementById("suggestions"));
+                }
+
+            } else {
+                console.log('error');
+            }
+
+/*
             get_chat_messages();
             //get_auto_responses('what would you like to order');
             //get_auto_responses();
@@ -126,28 +185,30 @@
 
             get_last_sender();
 
-            console.log('last_sender: ' + last_sender);
             if (last_sender == 1) {
                 get_last_message();
-                console.log('last_message: ' + last_message);
                 if (last_message != null) {
-                    get_auto_responses(last_message);
-                    last_message = '';
+                    if (sr_flag == true) {
+
+                    } else {
+                        get_auto_responses(last_message);
+                        last_message = '';
+                        sr_flag = true;
+                    }
                 }
 
             } else {
-                console.log('user_role: ' +  user_role);
+                sr_flag = false;
                 if (user_role == 0) {
                     $('#message_content').val('');
                     removeOptions(document.getElementById("suggestions"));
                 } else {
                     removeOptions(document.getElementById("suggestions"));
-                    //console.log('ends right here');
                 }
 
             }
-
-        }, 3000);
+*/
+}, 1000);
 
 
 
@@ -169,8 +230,8 @@
                 return false;
             }
         });
-
     });
+
 
     function chat_logout() {
         $.ajax({
@@ -195,6 +256,9 @@
 
     function send_message() {
 
+        last_sender = $('#user_admin').val();
+        console.log('send_message_last_sender: ' + last_sender);
+
         $.ajax({
             url: "<?php echo site_url('index.php/Chat/ajax_add_chat_message');?>",
             type: "POST",
@@ -204,10 +268,13 @@
                if (data.status) {
                    $('#chat_viewport').html(data.content);
                    var message_content_pre = $('#message_content').val();
+                   //last_message = $('#message_content').val();
                    $('#message_content').val('');
                    //var content = 'what would you like to order';
+
                    //get_auto_responses();
-                   get_auto_responses(message_content_pre);
+
+                   //get_auto_responses(message_content_pre);
 
                    // get_last_sender();
                    // console.log('last_sender: ' + last_sender);
@@ -231,7 +298,7 @@
         $.ajax({
             url: "<?php echo site_url('index.php/Chat/ajax_get_chat_messages');?>",
             type: "POST",
-            //data: "<?php echo $_SESSION['chat_id']; ?>",
+            //data: "<?php //echo $_SESSION['chat_id']; ?>",
             dataType: "JSON",
             success: function(data) {
                 if (data.status) {
@@ -276,12 +343,17 @@
                     //alert('last message is ' + message);
                     //console.log(JSON.stringify(data.message));
                     last_message = data.message.message;
+                } else {
+                    last_message = '';
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Get last Message Error adding / update data: ' + errorThrown);
             }
         });
+    }
+    function last_message() {
+        return last_message;
     }
 
     function get_last_sender() {
@@ -293,8 +365,10 @@
             success: function(data) {
                 if (data) {
                     last_sender = data.last_sender.last_sender;
+                    //return data.last_sender.last_sender;
                     //console.log('last_sender2: '+ data.last_sender.last_sender);
                 } else {
+                    last_sender = '';
                     console.log('error');
                 }
 
@@ -306,17 +380,20 @@
         //return result;
     }
 
+    function last_sender() {
+        return last_sender;
+    }
+
     function get_auto_responses(content) {
 
         //$('#suggestions').html('');
         //document.getElementById('suggestions').innerHTML = '';
 
-        var str = content;
-        str = str.replace(/\s+/g, '-').toLowerCase();
-
+        var str = encodeURIComponent(content);
+        //str = str.replace(/\s+/g, '-').toLowerCase();
         //alert("'"+content+"'");
         //console.log(content);
-        //console.log(str);
+        console.log(str);
 
 
         //var content = 'what would you like to order';
@@ -324,17 +401,22 @@
 
         $.ajax({
             url: "<?php echo site_url('index.php/Chat/ajax_get_api_results');?>/" + str,
+            //url: "<?php //echo site_url('index.php/Chat/ajax_get_api_results');?>",
             type: "POST",
-            //data: str,
+            //data: { 'data' : str },
+            //data: JSON.stringify(str),
             dataType: "JSON",
             success: function(data) {
                 //alert(JSON.stringify(data));
-                var responses = data.suggestedResponses;
+                if (data.suggestedResponses) {
+                    var responses = data.suggestedResponses;
 
-                $.each(responses, function(i, item) {
-                   $("#suggestions").append("<option value='" + responses[i] + "'>");
-                   //console.log('check' + i);
-                });
+                    $.each(responses, function(i, item) {
+                        $("#suggestions").append("<option value='" + responses[i] + "'>");
+                        console.log('response ' + i + ": " + responses[i]);
+                    });
+                }
+
 
                 //alert(responses);
                 // if (data.status) {
@@ -353,11 +435,11 @@
         var i;
         for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
         {
-            selectbox.remove(i);
+            selectbox.children[i].remove();
         }
     }
 
     //scroll_down();
-    get_chat_messages();
+    //get_chat_messages();
 
 </script>

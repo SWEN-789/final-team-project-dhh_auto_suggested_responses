@@ -1,3 +1,8 @@
+<?php
+    echo 'Chat ID: ' . $_SESSION['chat_id'] . '<br>';
+    echo 'Context: ' . $_SESSION['context'] . '<br>';
+    echo 'Mode: ' . $_SESSION['mode'] . '<br>';
+?>
 <div class="container">
 	<div class="row">
 		<div class="col"></div>
@@ -48,7 +53,8 @@
             success: function(data) {
                 if (data.authenticated) {
                     if (data.admin == 1) {
-                        window.location = "<?php echo site_url('index.php/Admin'); ?>";
+                        //window.location = "<?php echo site_url('index.php/Admin'); ?>";
+                        window.location = "<?php echo site_url('index.php/Chat/view_chats'); ?>";
                     } else {
                         window.location = "<?php echo site_url('index.php/Chat/view_chats'); ?>";
                     }

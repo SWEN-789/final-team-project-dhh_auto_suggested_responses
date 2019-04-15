@@ -69,11 +69,13 @@ class Chat extends MY_Controller {
 	public function ajax_add_chat_message() {
 
 		$chat_id = $this->input->post('chat_id');
+		$context = $this->input->post('context');
+		$mode = $this->input->post('mode');
 		$user_id = $this->input->post('user_id');
 		$user_admin = $this->input->post('user_admin');
 		$message_content = $this->security->xss_clean($this->input->post('message_content'));
 
-		$result = $this->Chat_Model->add_chat_message($chat_id, $user_id, $message_content);
+		$result = $this->Chat_Model->add_chat_message($chat_id, $context, $mode, $user_id, $message_content);
 		log_message('debug','last message inserted: ' . $result);
 		$this->session->set_userdata('last_chat_message_id_'.$chat_id, $result);
 
@@ -102,6 +104,11 @@ class Chat extends MY_Controller {
 		echo json_encode(array("message" => $last_message));
 	}
 
+//	public function ajax_get_last_message() {
+//		$last_message = $this->Chat_Model->get_last_message();
+//		echo json_encode(array("message" => $last_message));
+//	}
+
 	function _get_chat_messages($chat_id) {
 
 		$last_chat_message_id = (int)$this->session->userdata('last_chat_message_id_'. $chat_id);
@@ -120,7 +127,7 @@ class Chat extends MY_Controller {
 			}
 			$chat_messages_html .= '</ul>';
 
-			$this->session->set_userdata('last_chat_message_id_'.$chat_id, $last_chat_message_id);
+			//a$this->session->set_userdata('last_chat_message_id_'.$chat_id, $last_chat_message_id);
 
 			$results = array(
 				'status' => true,
@@ -139,29 +146,36 @@ class Chat extends MY_Controller {
 		}
 	}
 
+
+
+
 	public function ajax_get_api_results($message) { //($method, $url, $data) {
 		//$message = 'what would you like to order';
 		//log_message('debug', 'message: '.$message);
-		$message = str_replace('-',' ', $message);
+		//$message = str_replace('-',' ', $message);
+		$message2 = urldecode($message);
 		$method = "POST";
 		$url = "http://localhost:8080/get-suggested-responses";
-		//$url = "https://dhh-service.heroku.com/get-suggested-responses";
+		//$url = "https://dhh-service.herokuapp.com/get-suggested-responses";
 		$data = json_encode( array(
-			'context' => 'food service',
-			'message' => $message
+			'context' => $_SESSION['context'] . ' service',
+			'message' => $message2,
 		));
 		$results = $this->Chat_Model->callAPI($method, $url, $data);
+		log_message('debug', 'NO DATA RETURNED');
 		echo $results;
 	}
 
-	public function ajax_add_api_results() { //($method, $url, $data) {
-		$method = "POST";
-		$url = "http://localhost:8080/add-suggested-response";
-		$data = json_encode( array(
-			'context' => 'food service',
-			'suggestedResponse' => 'Could I please get a chef salad'
-		));
-		$results = $this->Chat_Model->callAPI($method, $url, $data);
-		echo $results;
-	}
+
+
+//	public function ajax_add_api_results() { //($method, $url, $data) {
+//		$method = "POST";
+//		$url = "http://localhost:8080/add-suggested-response";
+//		$data = json_encode( array(
+//			'context' => 'food service',
+//			'suggestedResponse' => 'Could I please get a chef salad'
+//		));
+//		$results = $this->Chat_Model->callAPI($method, $url, $data);
+//		echo $results;
+//	}
 }

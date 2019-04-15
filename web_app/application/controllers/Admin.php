@@ -18,8 +18,8 @@ class Admin extends MY_Controller {
 	}
 
 	public function index() {
-
-		$this->template->load('view_admin');
+		$data['users_online'] = $this->Admin_Model->get_users_online();
+		$this->template->load('view_admin', $data);
 	}
 
 }

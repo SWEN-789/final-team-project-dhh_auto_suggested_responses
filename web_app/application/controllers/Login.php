@@ -17,8 +17,14 @@ class Login extends MY_Controller {
 		$this->load->model('Login_Model');
 	}
 
-	public function index() {
-		$this->template->load('view_login');
+	public function index($chat_id = null, $context = null, $mode = null) {
+
+		$data['chat_id'] = $this->session->set_userdata('chat_id', $chat_id);
+		$data['context'] = $this->session->set_userdata('context', $context);
+		if ($mode == 'true') $mode2 = 1;
+		else $mode2= 0;
+		$data['mode'] = $this->session->set_userdata('mode', $mode2);
+		$this->template->load('view_login', $data);
 	}
 
 	public function ajax_check_login() {
@@ -38,9 +44,12 @@ class Login extends MY_Controller {
 			$this->Login_Model->set_online($auth['user_id']);
 			$this->session->set_userdata('user_session', $auth);
 			$this->session->set_userdata('last_chat_message_id_'.$_SESSION['user_session']['user_id'], 0);
-			if ($auth['user_admin'] === 0) {
-				$this->session->set_userdata('chat_id', $_SESSION['user_session']['user_id']);
-			}
+//			if ($auth['user_admin'] == 0) {
+//				$this->session->set_userdata('chat_id', $auth['user_id']);
+//			} else {
+//
+//			}$this->session->set_userdata('chat_id', 2);
+
 			$result = array(
 				'admin' => $_SESSION['user_session']['user_admin'],
 				'authenticated' => true
@@ -57,6 +66,8 @@ class Login extends MY_Controller {
 	public function ajax_logout() {
 		$this->Login_Model->remove_user_online($_SESSION['user_session']['user_id']);
 		unset($_SESSION['user_session']);
+		unset($_SESSION['context']);
+		unset($_SESSION['mode']);
 		echo json_encode(array('logout' => true));
 	}
 
