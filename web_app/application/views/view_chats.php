@@ -384,12 +384,32 @@ else $asterisk = '';
         return last_sender;
     }
 
+    function add_suggested_response(content, suggestion) {
+        var str_content = encodeURIComponent(content);
+        var str_suggestion = encodeURIComponent(suggestion);
+
+        $.ajax({
+            url: "<?php echo site_url('index.php/Chat/ajax_add_api_results');?>/" + str_content + "/" + str_suggestion,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data) {
+                if (data) {
+                    alert("Successfully added a suggested response!");
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error adding suggested response: ' + errorThrown);
+            }
+        });
+    }
+
     function get_auto_responses(content) {
 
         //$('#suggestions').html('');
         //document.getElementById('suggestions').innerHTML = '';
 
         var str = encodeURIComponent(content);
+        str = str.replace(/'/g, '%27');
         //str = str.replace(/\s+/g, '-').toLowerCase();
         //alert("'"+content+"'");
         //console.log(content);

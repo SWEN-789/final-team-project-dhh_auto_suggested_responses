@@ -117,10 +117,14 @@ class Chat extends MY_Controller {
 		if ($chat_messages) {
 			// store the last chat message id
 			// we have a chat - return something
-			$chat_messages_html = '<ul>';
+			$chat_messages_html = '<ul style="">';
 			foreach ($chat_messages as $chat_message) {
-				$chat_messages_html .= '<li class="message">(';
-				$chat_messages_html .= $chat_message->name . ") ";
+				$chat_messages_html .= '<li class="message" ';
+				$chat_messages_html .= 'style="list-style: none; ';
+				if ($chat_message->user_id == 1) $chat_messages_html .= 'text-align: left; background-color: #A7D9FA';
+				else $chat_messages_html .= 'text-align: right; background-color: #F7FAA7';
+				$chat_messages_html .= '">';
+				$chat_messages_html .= '(' . $chat_message->name . ") ";
 				$chat_messages_html .= $chat_message->message_content;
 				$chat_messages_html .= '</li>';
 				$last_chat_message_id = $chat_message->chat_message_id;
@@ -155,11 +159,11 @@ class Chat extends MY_Controller {
 		//$message = str_replace('-',' ', $message);
 		$message2 = urldecode($message);
 		$method = "POST";
-		$url = "http://localhost:8080/get-suggested-responses";
-		//$url = "https://dhh-service.herokuapp.com/get-suggested-responses";
+		//$url = "http://localhost:8080/get-suggested-responses";
+		$url = "https://dhh-service.herokuapp.com/get-suggested-responses";
 		$data = json_encode( array(
 			'context' => $_SESSION['context'] . ' service',
-			'message' => $message2,
+			'message' => $message2
 		));
 		$results = $this->Chat_Model->callAPI($method, $url, $data);
 		log_message('debug', 'NO DATA RETURNED');
@@ -168,14 +172,17 @@ class Chat extends MY_Controller {
 
 
 
-//	public function ajax_add_api_results() { //($method, $url, $data) {
-//		$method = "POST";
-//		$url = "http://localhost:8080/add-suggested-response";
-//		$data = json_encode( array(
-//			'context' => 'food service',
-//			'suggestedResponse' => 'Could I please get a chef salad'
-//		));
-//		$results = $this->Chat_Model->callAPI($method, $url, $data);
-//		echo $results;
-//	}
+	public function ajax_add_api_results($message, $suggestion) { //($method, $url, $data) {
+		$message2 = urldecode($message);
+		$suggestion2 = urldecode($message2);
+		$method = "POST";
+		$url = "http://localhost:8080/add-suggested-response";
+		$data = json_encode( array(
+			'context' => $_SESSION['context'] . ' service',
+			'message' => $message2,
+			'suggestedResponse' => $suggestion2
+		));
+		$results = $this->Chat_Model->callAPI($method, $url, $data);
+		echo $results;
+	}
 }
