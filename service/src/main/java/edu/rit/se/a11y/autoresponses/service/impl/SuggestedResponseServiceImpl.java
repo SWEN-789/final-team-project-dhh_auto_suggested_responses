@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.regex.*;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
     private void initializeContextPhrasesAndResponses() {
         ContextMessageResponseModel foodServiceContextMessageResponseModelObject = new ContextMessageResponseModel();
         foodServiceContextMessageResponseModelObject.setContext("food service");
-        foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("what would you like to order", Arrays.asList("Could I please get a cheeseburger?", "Could I please get a chicken finger sandwich?"));
+        //foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("what would you like to order", Arrays.asList("Could I please get a cheeseburger?", "Could I please get a chicken finger sandwich?"));
         foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("what would you like on that", Arrays.asList("Cheese and honey mustard, please.", "Nothing."));
         foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("anything to drink", Arrays.asList("Just water, please."));
         foodServiceContextMessageResponseModelObject.addResponsesForIncomingMessage("here's your receipt", Arrays.asList("Thank you."));
@@ -44,6 +45,17 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
         contextMessageResponseModelList.add(movieServiceContextMessageResponseModelObject);
     }
 
+    private String getResponse(String incomingMessage) {
+        String pattern = "(what|which food) would you like( to order)?";
+        Pattern r = Pattern.compile(pattern);
+        // Now create matcher object.
+        Matcher m = r.matcher(incomingMessage);
+        if (m.find( )) {
+            return "what would you like to order";
+        }
+        return "";
+    }
+
     @Override
     public GetSuggestedResponsesResponse getSuggestedResponses(GetSuggestedResponsesRequest suggestedRequest) {
         // Set up a default, empty response object in case there is an issue with the
@@ -53,7 +65,10 @@ public class SuggestedResponseServiceImpl implements SuggestedResponseService {
         if (suggestedRequest != null) {
             String context = suggestedRequest.getContext();
             String message = suggestedRequest.getMessage();
-            List<String> suggestedResponses = getResponseFromContextAndPhrase(context, message);
+            System.out.println("response:" + suggestedRequest.getMessage());
+            String normalizedMessage = getResponse(message);
+            System.out.println("normalized: " + normalizedMessage);
+            List<String> suggestedResponses = getResponseFromContextAndPhrase(context, normalizedMessage);
             suggestedResponse = new GetSuggestedResponsesResponse(suggestedResponses);
         }
 

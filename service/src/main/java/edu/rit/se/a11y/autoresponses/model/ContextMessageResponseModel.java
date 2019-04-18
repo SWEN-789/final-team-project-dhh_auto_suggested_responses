@@ -58,6 +58,8 @@ public class ContextMessageResponseModel {
 
                 // If the incoming message is similar to the current pre-existing message (i.e. incoming message contains substring of current
                 // pre-existing message, ignoring case), then add just the incoming suggested response since the (similar) message already exists
+
+
                 if (StringUtils.containsIgnoreCase(incomingMessage, currentMessage)) {
                     currentMessageWithResponsesModelObject.addSuggestedResponse(incomingSuggestedResponse);
 
@@ -77,6 +79,11 @@ public class ContextMessageResponseModel {
                 wereMessageSuggestedResponseAdded = true;
             }
         }
+
+    }
+    private String getResponse(String incomingMessage) {
+        return "";
+
     }
 
     public List<String> getSuggestedResponsesForIncomingMessage(String incomingMessage) {
