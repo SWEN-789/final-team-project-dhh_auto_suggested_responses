@@ -27,6 +27,8 @@
             overflow:auto;
             transform: rotate(180deg);
             direction: rtl;
+            border-style: solid;
+            border-width: 1px;
         }
         .message {
             padding: 5px;
@@ -37,8 +39,3 @@
 
 </head>
 <body>
-<div class="container">
-    <nav class="navbar navbar-dark bg-dark">
-        <span class="navbar-brand mb-0 h1">DHH Chat</span>
-    </nav>
-</div>
