@@ -6,3 +6,4 @@ See [the service README](service/README.md) for details about and running the se
 
 See [the web-app README](web_app/README.md) for details on installing the Codeigniter framework, creating the database, and launching the web-app.
 
+See [the documentation directory](directory) for the interview results we collected for our contextual inquiry, our Informed Consent template, the flyer we used to attempt recruiting DHH participants for our study, and the questionnaires and the results we gathered from each participant for our experiments.
